@@ -1,57 +1,68 @@
-# Decentralized Identity Smart Contract
+# Anonymization Smart Contract
 
 ## Overview
-The **Decentralized Identity** smart contract provides a mechanism for users and companies to register their decentralized identities (DID) and undergo KYC (Know Your Customer) verification. The contract allows an entity to prove its identity in a trustless manner on the blockchain.
+The **Anonymization Smart Contract** is designed to facilitate secure and private data submission for research purposes. It utilizes **ring signatures** to anonymize data submissions while ensuring aggregation and verification of the collected information.
 
 ## Features
-- **User Registration**: Allows users to register a decentralized identity (DID).
-- **Company Registration**: Enables companies to register their names on the blockchain.
-- **KYC Verification**: The contract owner can verify users' and companies' identities.
-- **Read Identity Information**: Fetch identity details and KYC verification status.
+- **Ring Signature-Based Anonymization:** Ensures privacy by allowing users to submit data without revealing their identity.
+- **Data Aggregation:** Collects and processes submitted data for research analysis.
+- **Role-Based Access Control:** Limits submission and research access to authorized users.
+- **Secure Researcher Management:** Only the contract owner can add or remove authorized researchers.
+- **Tamper-Resistant Data Storage:** Stores aggregated data securely on-chain.
 
-## Smart Contract Details
+## Error Codes
+| Code | Description |
+|------|-------------|
+| `ERR-NOT-AUTHORIZED (u100)` | User is not authorized to perform the action. |
+| `ERR-INVALID-DATA (u101)` | Submitted data is invalid. |
+| `ERR-RING-SIZE-INVALID (u102)` | Provided ring size is invalid. |
 
-### Constants
-- `contract-owner`: Defines the contract owner who has the authority to verify KYC.
-- Error Codes:
-  - `err-unauthorized (u100)`: Access restricted to the contract owner.
-  - `err-already-registered (u101)`: The user or company is already registered.
-  - `err-not-registered (u102)`: The user or company is not registered.
-  - `err-kyc-already-verified (u103)`: KYC verification is already completed.
+## Data Structures
+### Mappings
+- **`aggregated-data`**: Stores aggregated statistics for each category.
+- **`ring-signatures`**: Stores ring signatures for verification.
+- **`authorized-researchers`**: Tracks authorized researchers.
 
-### Data Structures
-#### Data Maps
-- `users`: Stores user identity details and KYC verification status.
-  - Key: `principal` (user's blockchain address)
-  - Value:
-    - `did`: (string-ascii 64) Unique Decentralized Identifier.
-    - `kyc-verified`: (bool) Indicates if the user has passed KYC verification.
-- `companies`: Stores company information and KYC verification status.
-  - Key: `principal` (company's blockchain address)
-  - Value:
-    - `name`: (string-ascii 64) Company name.
-    - `kyc-verified`: (bool) Indicates if the company has passed KYC verification.
+### Variables
+- **`submission-counter`**: Tracks the number of submissions.
+- **`contract-owner`**: Stores the contract owner.
+
+## Functions
+### Public Functions
+#### `initialize-contract(researcher: principal) -> (ok true | err)`
+Initializes the contract and authorizes a researcher (only callable by the contract owner).
+
+#### `submit-anonymous-data(category: string, value: uint, ring-size: uint, ring-signature: buff) -> (ok submission-id | err)`
+Submits anonymized data under a specified category using a ring signature.
+
+#### `add-researcher(researcher: principal) -> (ok true | err)`
+Adds a new researcher to the authorized list (only callable by the contract owner).
+
+#### `remove-researcher(researcher: principal) -> (ok true | err)`
+Removes a researcher from the authorized list (only callable by the contract owner).
 
 ### Read-Only Functions
-- `get-user-did(user)`: Returns the DID of a given user.
-- `is-user-kyc-verified(user)`: Checks if a user is KYC verified.
-- `is-company-kyc-verified(company)`: Checks if a company is KYC verified.
-
-### Public Functions
-- `register-user(did)`: Allows a user to register a DID.
-- `register-company(name)`: Enables a company to register its name.
-- `verify-user-kyc(user)`: Allows the contract owner to verify a user's KYC.
-- `verify-company-kyc(company)`: Allows the contract owner to verify a company's KYC.
+#### `get-aggregated-data(category: string) -> (ok data | none)`
+Retrieves aggregated data for a given category.
 
 ### Private Functions
-- `is-kyc-verified(entity)`: Checks if an entity (user or company) has passed KYC verification.
+#### `generate-ring-members(size: uint) -> list`
+Generates a list of ring members for anonymity.
+
+#### `is-authorized(user: principal) -> bool`
+Checks if a user is authorized to submit data.
 
 ## Usage
-1. **User/Company Registration**: Users and companies register by calling `register-user` or `register-company`.
-2. **KYC Verification**: The contract owner verifies identities using `verify-user-kyc` or `verify-company-kyc`.
-3. **Identity Retrieval**: Third parties can retrieve identity details using read-only functions.
+1. **Initialize the contract** by adding an initial authorized researcher.
+2. **Submit anonymized data** under different research categories.
+3. **Retrieve aggregated data** for research analysis.
+4. **Manage researchers** to control data submission access.
 
 ## Security Considerations
-- Only the contract owner can verify KYC to prevent unauthorized modifications.
-- User and company registrations cannot be duplicated.
-- Identity information is stored securely on the blockchain.
+- Only authorized researchers can submit and retrieve data.
+- Ring signatures help maintain anonymity while ensuring verifiable submissions.
+- Contract owner has exclusive control over researcher management.
+
+## License
+This project is open-source and available for modification under an appropriate open-source license.
+
