@@ -34,6 +34,11 @@ epoch = 2.5
 path = 'contracts/resh.clar'
 clarity_version = 2
 epoch = 2.5
+
+[contracts.voter_registration]
+path = 'contracts/voter_registration.clar'
+clarity_version = 2
+epoch = 2.5
 [repl.analysis]
 passes = ['check_checker']
 
