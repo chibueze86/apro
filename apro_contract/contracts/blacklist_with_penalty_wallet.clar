@@ -191,3 +191,8 @@
     (default-to u0 (map-get? locked-funds user))
 )
 
+;; Get contract admin
+(define-read-only (get-admin)
+    (var-get contract-admin)
+)
+
