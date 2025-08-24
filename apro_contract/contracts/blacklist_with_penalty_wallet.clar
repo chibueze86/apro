@@ -196,3 +196,18 @@
     (var-get contract-admin)
 )
 
+;; Check if funds can be claimed (lock period ended)
+(define-read-only (can-claim-funds (user principal))
+    (let (
+        (blacklist-info (map-get? blacklisted-users user))
+        (has-locked-funds (> (default-to u0 (map-get? locked-funds user)) u0))
+    )
+        (and 
+            has-locked-funds
+            (match blacklist-info
+                some-info (>= block-height (get lock-end-block some-info))
+                true ;; No blacklist info means can claim if has locked funds
+            )
+        )
+    )
+)
