@@ -10,6 +10,11 @@ path = 'contracts/anonymization.clar'
 clarity_version = 2
 epoch = 2.5
 
+[contracts.blacklist_with_penalty_wallet]
+path = 'contracts/blacklist_with_penalty_wallet.clar'
+clarity_version = 2
+epoch = 2.5
+
 [contracts.decentralized_identity]
 path = 'contracts/decentralized_identity.clar'
 clarity_version = 2
